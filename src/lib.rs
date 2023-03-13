@@ -116,6 +116,10 @@ impl Build {
             config.define("LUA_USE_APICHECK", None);
         }
 
+        if env::var("CARGO_FEATURE_THREAD").is_ok() {
+            config.define("LUA_USER_H", "\"../ezlua/ezlua.h\"");
+        }
+
         let lib_name = match version {
             Lua51 => "lua5.1",
             Lua52 => "lua5.2",
