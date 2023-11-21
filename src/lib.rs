@@ -121,6 +121,19 @@ impl Build {
             config.define("LUA_USER_H", "\"../ezlua/ezlua.h\"");
         }
 
+        if env::var("CARGO_FEATURE_BUILD_DYLIB").is_ok() {
+            let target_family = env::var("CARGO_CFG_TARGET_FAMILY").unwrap();
+            if target_family == "windows" {
+                config.define("LUA_CORE", None);
+                config.define("LUA_BUILD_AS_DLL", None);
+            } else {
+                config.pic(true);
+                config.flag("-fvisibility=default");
+                config.shared_flag(true);
+                println!("cargo:rustc-cdylib-link-arg=-fvisibility=default");
+            }
+        }
+
         let lib_name = match version {
             Lua51 => "lua5.1",
             Lua52 => "lua5.2",
